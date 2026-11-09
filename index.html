@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ارائه تخصصی پیشرفته: کاربرد آمار و احتمال در مهندسی عمران</title>
+    <style>
+        :root {
+            --bg-primary: #050b14;
+            --bg-secondary: #0f1c30;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --card-border: rgba(56, 189, 248, 0.25);
+            --card-bg: rgba(15, 28, 48, 0.7);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at 50% 20%, #112240 0%, #050b14 100%);
+        }
+
+        .presentation-container {
+            width: 94vw;
+            height: 85vh;
+            max-width: 1300px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px var(--accent-glow);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            flex: 1;
+            padding: 45px;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.99) translateY(8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .slide-header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slide-header h2 {
+            color: var(--accent);
+            font-size: 26px;
+            text-shadow: 0 0 10px rgba(56,189,248,0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .slide-content {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .text-side {
+            flex: 1.4;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .text-side p, .text-side li {
+            font-size: 15px;
+            line-height: 2.1;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            text-align: justify;
+        }
+
+        .text-side p:last-child {
+            margin-bottom: 0;
+        }
+
+        .text-side ul {
+            padding-right: 20px;
+        }
+
+        .image-side {
+            flex: 0.9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-side img {
+            max-width: 100%;
+            max-height: 360px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            object-fit: cover;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .image-side img:hover {
+            transform: scale(1.02);
+        }
+
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 15px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        button.nav-btn {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 26px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(56,189,248,0.3);
+        }
+
+        button.nav-btn:hover {
+            background-color: #7dd3fc;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56,189,248,0.5);
+        }
+
+        .cover-slide {
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(15,28,48,0.9) 0%, rgba(5,11,20,0.95) 100%);
+        }
+
+        .cover-slide h1 {
+            font-size: 36px;
+            color: var(--accent);
+            margin-bottom: 25px;
+            text-shadow: 0 0 15px rgba(56,189,248,0.4);
+        }
+
+        .cover-slide p {
+            font-size: 17px;
+            margin: 12px 0;
+            color: var(--text-muted);
+            line-height: 1.9;
+            max-width: 900px;
+        }
+    
+/* =========================
+   Responsive layout
+   ========================= */
+html {
+    min-height: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 20px 0 76px;
+}
+
+.presentation-container {
+    width: min(94vw, 1300px);
+    height: min(85vh, 900px);
+    height: min(85dvh, 900px);
+    min-height: 0;
+}
+
+.slide {
+    min-height: 0;
+    padding: clamp(20px, 3.2vw, 45px);
+    padding-bottom: 82px;
+}
+
+.slide-header {
+    gap: 16px;
+}
+
+.slide-header h2 {
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.slide-content {
+    min-width: 0;
+}
+
+.text-side,
+.image-side {
+    min-width: 0;
+}
+
+.text-side p,
+.text-side li {
+    overflow-wrap: anywhere;
+}
+
+.image-side img {
+    width: 100%;
+    height: auto;
+    max-height: 360px;
+}
+
+.cover-slide {
+    overflow-y: auto;
+}
+
+.cover-slide h1 {
+    line-height: 1.5;
+}
+
+.controls {
+    bottom: 14px;
+    gap: 10px;
+}
+
+button.nav-btn {
+    min-height: 42px;
+    touch-action: manipulation;
+}
+
+@media (max-width: 900px) {
+    body {
+        padding: 14px 0 72px;
+    }
+
+    .presentation-container {
+        width: 96vw;
+        height: 88vh;
+        height: 88dvh;
+        border-radius: 16px;
+    }
+
+    .slide {
+        padding: 28px;
+        padding-bottom: 82px;
+    }
+
+    .slide-content {
+        gap: 24px;
+    }
+
+    .slide-header h2 {
+        font-size: clamp(20px, 3vw, 26px);
+    }
+
+    .text-side {
+        padding: 22px;
+    }
+
+    .text-side p,
+    .text-side li {
+        font-size: 14px;
+        line-height: 2;
+    }
+
+    .image-side img {
+        max-height: 290px;
+    }
+
+    .cover-slide h1 {
+        font-size: clamp(28px, 5vw, 36px);
+    }
+
+    .cover-slide p {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 0;
+        justify-content: flex-start;
+        align-items: stretch;
+        overflow: hidden;
+        background-image: radial-gradient(circle at 50% 20%, #112240 0%, #050b14 100%);
+    }
+
+    .presentation-container {
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        max-width: none;
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+        box-shadow: none;
+    }
+
+    .slide {
+        padding: 20px 16px 88px;
+        gap: 18px;
+        justify-content: flex-start;
+        overscroll-behavior: contain;
+    }
+
+    .slide-header {
+        display: block;
+        flex: 0 0 auto;
+        padding-bottom: 12px;
+        margin-bottom: 0;
+    }
+
+    .slide-header h2 {
+        font-size: clamp(18px, 5vw, 22px);
+        line-height: 1.9;
+        letter-spacing: 0;
+    }
+
+    .slide-content {
+        flex: 0 0 auto;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .text-side {
+        width: 100%;
+        flex: none;
+        padding: 17px;
+        border-radius: 10px;
+    }
+
+    .text-side p,
+    .text-side li {
+        font-size: 13px;
+        line-height: 2;
+        margin-bottom: 10px;
+        text-align: right;
+    }
+
+    .text-side ul {
+        padding-right: 18px;
+    }
+
+    .image-side {
+        width: 100%;
+        flex: none;
+    }
+
+    .image-side img {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        max-height: 230px;
+        object-fit: contain;
+    }
+
+    .slide-footer {
+        flex: 0 0 auto;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-size: 11px;
+        line-height: 1.8;
+        padding-top: 10px;
+        margin-top: auto;
+    }
+
+    .controls {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: max(8px, env(safe-area-inset-bottom));
+        transform: none;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 12px;
+    }
+
+    button.nav-btn {
+        flex: 1;
+        max-width: 180px;
+        padding: 11px 10px;
+        min-height: 44px;
+        font-size: 12px;
+        border-radius: 7px;
+    }
+
+    .cover-slide {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 24px 18px 92px;
+    }
+
+    .cover-slide h1 {
+        font-size: clamp(27px, 8vw, 34px);
+        margin-bottom: 16px;
+    }
+
+    .cover-slide p {
+        width: 100%;
+        max-width: 100%;
+        font-size: 13px;
+        line-height: 2;
+        margin: 8px 0;
+        overflow-wrap: anywhere;
+    }
+
+    .cover-slide .slide-footer {
+        width: 100%;
+        justify-content: space-between;
+        margin-top: 22px;
+    }
+}
+
+@media (max-width: 360px) {
+    .slide {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .text-side {
+        padding: 14px;
+    }
+
+    .text-side p,
+    .text-side li {
+        font-size: 12px;
+    }
+
+    button.nav-btn {
+        font-size: 11px;
+        padding-inline: 7px;
+    }
+
+    .slide-footer {
+        font-size: 10px;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        padding: 0;
+    }
+
+    .presentation-container {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+    }
+
+    .slide {
+        padding: 14px 20px 68px;
+    }
+
+    .slide-content {
+        gap: 18px;
+    }
+
+    .text-side {
+        padding: 14px;
+    }
+
+    .text-side p,
+    .text-side li {
+        font-size: 12px;
+        line-height: 1.7;
+        margin-bottom: 6px;
+    }
+
+    .image-side img {
+        max-height: 180px;
+    }
+
+    .slide-header h2 {
+        font-size: 18px;
+    }
+
+    .controls {
+        bottom: 6px;
+    }
+
+    button.nav-btn {
+        min-height: 36px;
+        padding: 7px 16px;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<div class="presentation-container">
+
+    <!-- اسلاید ۱: عنوان اصلی -->
+    <div class="slide cover-slide active">
+        <h1>به نام خدا</h1>
+        <p><strong>تحلیل تخصصی پیشرفته:</strong> کاربرد بنیادین آمار و احتمال در مقطع کارشناسی مهندسی عمران</p>
+        <p><strong>حوزه‌های تخصصی بررسی‌شده:</strong> راه و شهرسازی، پل و تونل‌های عمیق، فرودگاه‌های بین‌المللی، بنادر استراتژیک و سدهای بزرگ مخزنی</p>
+        <p><strong>استاد راهنما:</strong> دکتر آزادی</p>
+        <p><strong>گروه ارائه‌دهندگان:</strong> نگار صفری، آقای شجاعی، آقای پیوندچی، آقای کیماسی، آقای آذربایجانی</p>
+        <div class="slide-footer"><span>دانشگاه آزاد اسلامی واحد باراجین قزوین</span><span>صفحه ۱ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲ -->
+    <div class="slide">
+        <div class="slide-header"><h2>مقدمه پیشرفته: پارادایم شیفت از قطعیت سنتی به عدم قطعیت مدرن</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>در دهه‌های گذشته، مهندسان عمران پدیده‌های طبیعی، بارهای وارده و مقاومت مصالح را به صورت قطعی و با ضرایب ایمنی ثابت فرض می‌کردند.</p>
+                <p>با توسعه مدل‌های ریاضی پیشرفته مشخص شد که محیط طبیعی و رفتار انسان‌ها ذاتاً تصادفی، غیرقابل پیش‌بینی دقیق و توأم با عدم قطعیت‌های پیچیده است.</p>
+                <p>علم آمار و احتمال به عنوان زیربنای مهندسی ریسک، امکان مدل‌سازی ریاضی پدیده‌های تصادفی نظیر زلزله، سیلاب‌های حدی و تغییرات ترافیکی را فراهم می‌سازد.</p>
+                <p>هدف کلیدی در مهندسی عمران مدرن، طراحی سازه‌هایی بهینه است که در کنار توجیه اقتصادی بالا، ضریب قابلیت اطمینان و ایمنی جانی شهروندان را به حداکثر برسانند.</p>
+                <p>این رویکرد علمی، مهندسان را قادر می‌سازد تا به جای اتکا به شهود شخصی، تصمیمات خود را بر پایه تحلیل‌های مستند و داده‌محور بنا نمایند.</p>
+            </div>
+            <div class="image-side">
+                <img src="./sh1.jpg" alt="مهندسی عمران مدرن">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۲ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۳ -->
+    <div class="slide">
+        <div class="slide-header"><h2>بخش اول: رفتار شناسی استخوانی ترافیک و سرعت طرح ($85^{th}$ Percentile)</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>جریان ترافیک در معابر شهری و برون‌شهری برآیند تصمیمات هزاران راننده با ویژگی‌های روانشناختی و سرعت‌های متغیر و تصادفی است.</p>
+                <p>بر اساس مقالات مرجع مهندسی ترافیک، تعیین سرعت مجاز بر اساس حداکثر توان خودروها یا رانندگان اقلیت ساختار حفاظتی را تضعیف می‌کند.</p>
+                <p>شاخص آماری سرعت ۸۵ درصد (Percentile 85) به عنوان معیار اصلی و استاندارد بین‌المللی برای تنظیم سرعت طرح هندسی راه محسوب می‌شود.</p>
+                <p>این شاخص نشان‌دهنده سرعتی است که ۸۵ درصد رانندگان به صورت طبیعی و ارادی در شرایط مساعد آب‌وهوایی آن را رعایت می‌کنند.</p>
+                <p>استفاده از این پارامتر آماری تضمین می‌کند که ضوابط طراحی پیچ‌ها، شیب‌ها و حریم دید منطبق با واقعیت‌های رفتار انسانی جامعه باشد.</p>
+            </div>
+            <div class="image-side">
+                <img src="sh2.jpg" alt="تحلیل رفتار ترافیک">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۳ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۴ -->
+    <div class="slide">
+        <div class="slide-header"><h2>آسیب‌شناسی آماری سرعت‌های دستوری و تداخل جریان‌ها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>پژوهش‌های میدانی گسترده نشان می‌دهند که اعمال محدودیت‌های سرعتی غیرمنطقی و دستوری بسیار پایین‌تر از رفتار طبیعی رانندگان، پیامدهای مخربی دارد.</p>
+                <p>وقتی سرعت مصوب با سرعت متوسط جریان ترافیک اختلاف معناداری پیدا کند، شاخص واریانس و پراکندگی سرعت خودروها به‌شدت افزایش می‌یابد.</p>
+                <p>این پدیده موجب ایجاد تداخل شدید، افزایش مانورهای خطرناک سبقت و در نتیجه تصادفات زنجیره‌ای با خسارات جانی بالا می‌گردد.</p>
+                <p>مهندسی ترافیک مدرن با بهره‌گیری از توزیع‌های آماری سرعت، به دنبال همگن‌سازی جریان حرکت و کاهش تصادفات ناشی از خطای انسانی است.</p>
+                <p>بنابراین، بازنگری آیین‌نامه‌های سرعت بر اساس تحلیل‌های آماری دقیق، حلقه گمشده در ارتقای ایمنی شبکه راه‌های کشور است.</p>
+            </div>
+            <div class="image-side">
+                <img src="sh3.jpg" alt="مدیریت سرعت معابر">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۴ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۵ -->
+    <div class="slide">
+        <div class="slide-header"><h2>مدل‌سازی آماری پدیده «بازگشت به میانگین» در تحلیل نقاط حادثه‌خیز</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>شناسایی نقاط حادثه‌خیز (Black Spots) در شبکه راه‌ها نیازمند تفکیک نوسانات تصادفی محض از خطاهای واقعی هندسی و ایمنی است.</p>
+                <p>گاهی در یک تقاطع به صورت کاملاً اتفاقی و تصادفی در یک سال خاص چند فقره تصادف به وقوع می‌پیوندد.</p>
+                <p>اگر تیم‌های مهندسی بدون تحلیل آماری عمیق بلافاصله اقدام به اصلاح هندسی کنند، سال بعد تصادفات خودبه‌خود کاهش می‌یابد.</p>
+                <p>این خطای شناختی تحت عنوان پدیده «بازگشت به میانگین» (Regression to the Mean) شناخته شده و موجب هدررفت کلان بودجه‌های عمرانی می‌شود.</p>
+                <p>استفاده از مدل‌های رگرسیونی پیشرفته و توزیع پواسون به مهندسان کمک می‌کند تا نقاط واقعاً بحرانی را با اطمینان بالا از نوسانات تصادفی تفکیک کنند.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=600&q=80" alt="تحلیل نقاط حادثه‌خیز">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۵ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۶ -->
+    <div class="slide">
+        <div class="slide-header"><h2>تحلیل قابلیت اطمینان (Reliability) در طراحی سازه روسازی راه</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>آسفالت و لایه‌های باربر روسازی جاده‌ها تحت اثر تکرار بارهای ترافیکی سنگین به مرور دچار خستگی و خرابی شیارشدگی می‌شوند.</p>
+                <p>یک کامیون چندمحور سنگین، خسارتی معادل هزاران خودروی سواری به شبکه روسازی تحمیل می‌کند که نیازمند ضریب هم‌ارزی بار است.</p>
+                <p>طراحی قطعی روسازی به دلیل خطاهای پارامترهای مصالح و پیش‌بینی بار ترافیک آینده همواره با ریسک خرابی زودرس مواجه است.</p>
+                <p>مفهوم قابلیت اطمینان (Reliability) به مهندسان اجازه می‌دهد تا با اعمال ضرایب آماری، احتمالات خرابی را در طول عمر مفید کنترل کنند.</p>
+                <p>آزادراه‌های کشور بر اساس آیین‌نامه‌ها با سطوح قابلیت اطمینان بالا (بین ۹۰ تا ۹۹ درصد) طراحی می‌شوند تا هزینه‌های نگهداری بهینه گردد.</p>
+            </div>
+            <div class="image-side">
+                <img src="sh4.jpg" alt="طراحی روسازی راه">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۶ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۷ -->
+    <div class="slide">
+        <div class="slide-header"><h2>تحلیل هیدرولوژی و مدیریت ریسک سیلاب در گذرگاه‌های راه</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>طراحی پلچک‌ها و زهکش‌های عرضی راه به دلیل عدم قطعیت شدید در میزان بارش و دبی سیلاب‌های آینده یک چالش بزرگ هیدرولوژیکی است.</p>
+                <p>مهندسان با استفاده از آمار ثبت‌شده دبی سالانه رودخانه‌ها در ایستگاه‌های هیدرومتری، توزیع‌های آماری سیلاب را تحلیل می‌کنند.</p>
+                <p>محاسبه «دوره بازگشت» (Return Period) به طراحان نشان می‌دهد که احتمال وقوع سیلاب‌های بزرگ در طول عمر مفید راه چقدر است.</p>
+                <p>این تحلیل ریسک probabilist به برقراری تعادل اقتصادی میان هزینه ساخت سازه‌های سنگین و خطر تخریب ناشی از سیل کمک می‌کند.</p>
+                <p>بنابراین آمار هیدرولوژی به عنوان سپر محافظتی در برابر حوادث شدید جوی در شبکه راه‌سازی عمل می‌نماید.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=600&q=80" alt="هیدرولوژی راه و سیلاب">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۷ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۸ -->
+    <div class="slide">
+        <div class="slide-header"><h2>نظریه مطلوبیت تصادفی در برنامه‌ریزی کلان حمل‌ونقل شهری</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>توسعه پایدار کلان‌شهرها مستلزم پیش‌بینی دقیق رفتار سفرهای شهری شهروندان و انتخاب‌های حمل‌ونقلی آن‌ها است.</p>
+                <p>بر اساس نظریه مطلوبیت تصادفی (برنده جایزه نوبل اقتصاد)، تصمیم مسافران برای انتخاب خودروی شخصی، مترو یا اتوبوس قطعی نیست.</p>
+                <p>مدل‌های آماری لاجیت و پروبیت با در نظر گرفتن متغیرهای زمان، هزینه و راحتی، احتمال انتخاب هر گزینه را تخمین می‌زنند.</p>
+                <p>شهرسازان با استفاده از این مدل‌ها بررسی می‌کنند که تغییر قیمت سوخت یا احداث خطوط ریلی جدید چه سهمی از سفرهای شهری را تغییر می‌دهد.</p>
+                <p>این رویکرد مدرن، زیربنای تصمیم‌گیری‌های کلان ترافیکی و کاهش انتشار آلاینده‌های زیست‌محیطی در شهرهای بزرگ است.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80" alt="برنامه‌ریزی حمل‌ونقل شهری">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: نگار صفری</span><span>صفحه ۸ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۹ -->
+    <div class="slide">
+        <div class="slide-header"><h2>بخش دوم: مقدمه و نقش حیاتی آمار در پایداری پل‌ها و تونل‌ها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>پل‌ها و تونل‌ها به عنوان شاهراه‌های ارتباطی و حیاتی کشور، سنگین‌ترین بارهای ترافیکی و فشارهای جانبی زمین را تحمل می‌کنند.</p>
+                <p>کوچک‌ترین خطا در تخمین بارهای وارده یا مقاومت مصالح می‌تواند به فجایع ملی و هزینه‌های گزاف اقتصادی منجر شود.</p>
+                <p>علم آمار و احتمال در تمامی مراحل امکان‌سنجی، طراحی لرزه‌ای و نگهداری بهره‌برداری این سازه‌های عظیم حضور فعال دارد.</p>
+                <p>شناخت رفتار آماری مقاومت بتن و فولاد به مهندسان اطمینان می‌دهد که سازه در بدترین شرایط بارگذاری دچار گسیختگی نخواهد شد.</p>
+                <p>در این بخش به بررسی عمق کاربردهای احتمالاتی در مهندسی سازه‌های پل و زیرزمینی می‌پردازیم.</p>
+            </div>
+            <div class="image-side">
+                <img src="p1.jpg" alt="سازه‌های پل و تونل">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای شجاعی</span><span>صفحه ۹ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۰ -->
+    <div class="slide">
+        <div class="slide-header"><h2>تحلیل آماری بارهای ترافیکی و خستگی در سازه‌های پل</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>عرشه و اعضای خدماتی پل‌ها تحت اثر گذوگذر مداوم وسایل نقلیه سنگین با پدیده مخرب خستگی (Fatigue) مواجه هستند.</p>
+                <p>وزن کامیون‌ها متغیر بوده و از توزیع‌های آماری خاصی (نظیر توزیع نرمال یا لوگ نرمال) پیروی می‌کند.</p>
+                <p>مهندسان با استفاده از آمار وزن‌سنجی حین حرکت (WIM) طیف بارهای خستگی را برای عمر طراحی ۵۰ الی ۱۰۰ ساله شبیه‌سازی می‌کنند.</p>
+                <p>تحلیل طیف تنش‌های ایجادشده به کمک تئوری‌های احتمال آسیب، زمان ترک‌خوردگی فولاد و بتن را پیش‌بینی می‌کند.</p>
+                <p>این فرآیند از فروریزش ناگهانی اعضای کششی و کابلی پل‌های معلق و کابلی جلوگیری به عمل می‌آورد.</p>
+            </div>
+            <div class="image-side">
+                <img src="p2.jpg" alt="تحلیل بارهای پل">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای شجاعی</span><span>صفحه ۱۰ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۱ -->
+    <div class="slide">
+        <div class="slide-header"><h2>ارزیابی احتمالاتی مقاومت مصالح و کنترل کیفیت بتن پل‌ها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>مقاومت مشخصه بتن و فولاد مصرفی در ساخت پایه‌ها و عرشه‌های پل دارای پراکندگی طبیعی ناشی از شرایط کارگاهی است.</p>
+                <p>آزمایش نمونه‌های استوانه‌ای بتن در آزمایشگاه از قوانین توزیع آماری تبعیت کرده و میانگین و انحراف معیار مقاومت را تعیین می‌کند.</p>
+                <p>آیین‌نامه‌های طراحی بر اساس مقادیر مشخصه آماری (عموماً ۵ درصد پایین‌تر از میانگین) بارهای مجاز را محاسبه می‌کنند.</p>
+                <p>این رویکرد 확률ی تضمین می‌کند که حتی با فرض کیفیت پایین‌تر در برخی بخش‌ها، سازه کلی ایمنی لازم را حفظ کند.</p>
+                <p>کنترل کیفیت آماری مداوم در کارگاه‌های بزرگ ساخت پل، کلید اصلی دوام و پایایی سازه در برابر عوامل محیطی است.</p>
+            </div>
+            <div class="image-side">
+                <img src="p3.jpg" alt="کنترل کیفیت مصالح">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای شجاعی</span><span>صفحه ۱۱ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۲ -->
+    <div class="slide">
+        <div class="slide-header"><h2>مدل‌سازی زمین‌شناسی و احتمال ناپایداری در حفاری تونل‌ها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>تونل‌سازی در توده‌های سنگ و خاک به دلیل عدم قطعیت‌های ذاتی در پارامترهای ژئوتکنیکی یکی از پیچ‌ترین پروژه‌های عمرانی است.</p>
+                <p>نتایج گمانه‌های اکتشافی نقاط محدودی از زمین را نشان داده و خواص توده سنگ در طول مسیر تونل متغیر و تصادفی است.</p>
+                <p>مهندسان با استفاده از روش‌های شبیه‌سازی مونت‌کارلو، احتمال ریزش سقف و دیواره‌های تونل را پیش از حفاری تحلیل می‌کنند.</p>
+                <p>این ارزیابی ریسک آماری کمک می‌کند تا سیستم‌های نگهدارنده (شاتکریت، قاب فلزی و بولت) بر اساس احتمال خطر انتخاب شوند.</p>
+                <p>مدیریت عدم قطعیت ژئوتکنیکی از بروز حوادث فاجعه‌بار جانی و نشست‌های سطحی شهری جلوگیری می‌نماید.</p>
+            </div>
+            <div class="image-side">
+                <img src="p5.jpg" alt="حفاری و زمین‌شناسی تونل">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای شجاعی</span><span>صفحه ۱۲ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۳ -->
+    <div class="slide">
+        <div class="slide-header"><h2>مدیریت هیدرولیکی نفوذ آب زیرزمینی در سازه‌های زیرزمینی</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>فشار آب زیرزمینی و زهکشی در تونل‌های بلند کوهستانی و شهری یکی از عوامل اصلی تعیین‌کننده ضخامت پوشش بتنی است.</p>
+                <p>داده‌های مربوط به سطح ایستابی و نفوذپذیری سنگ‌ها دارای نوسانات فصلی و تصادفی وابسته به رژیم بارندگی است.</p>
+                <p>با تحلیل آماری داده‌های هیدروژئولوژی گذشته، حداکثر فشار محتمل آب بر جداره تونل با دامنه‌های اطمینان مشخص برآورد می‌شود.</p>
+                <p>سیستم‌های زهکشی تونل بر اساس آمار دبی نفوذی به گونه‌ای طراحی می‌شوند که خطر آب‌گرفتگی و شستشوی پشت لاینینگ به صفر برسد.</p>
+                <p>این تلفیق آمار و مکانیک سیالات، پایداری بلندمدت سازه‌های زیرزمینی را تضمین می‌کند.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80" alt="مدیریت آب تونل">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای شجاعی</span><span>صفحه ۱۳ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۴ -->
+    <div class="slide">
+        <div class="slide-header"><h2>جمع‌بندی جامع بخش پل و تونل و دستاوردهای آماری</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>طراحی ایمن پل‌ها و تونل‌ها مستلزم شناخت دقیق و علمی بارهای تصادفی، مقاومت متغیر مصالح و شرایط پیچیده زمین است.</p>
+                <p>علم آمار و احتمال به مهندسان ابزار لازم را برای تبدیل داده‌های خام گمانه‌ها و ترافیک به ضوابط ایمن طراحی می‌دهد.</p>
+                <p>مدیریت ریسک‌های ساخت و بهره‌برداری از دستاوردهای مستقیم کاربرد آمار در این سازه‌های استراتژیک است.</p>
+                <p>پروژه‌های عظیم پل و تونل در ایران و جهان گواه این حقیقتند که پایداری مدرن بدون تحلیل احتمالی معنا ندارد.</p>
+                <p>این بخش نشان داد که چگونه آمار از فروپاشی سازه‌های غول‌پیکر جلوگیری کرده و ثروت‌های ملی را محافظت می‌کند.</p>
+            </div>
+            <div class="image-side">
+                <img src="sh2.jpg" alt="جمع‌بندی پل و تونل">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای شجاعی</span><span>صفحه ۱۴ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۵ -->
+    <div class="slide">
+        <div class="slide-header"><h2>بخش سوم: زیرساخت‌های کلان فرودگاهی و اهمیت لجستیک هوایی</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>فرودگاه‌ها به عنوان دروازه‌های ارتباطی بین‌المللی هر کشور، نقش پیشران در توسعه اقتصادی، گردشگری و بازرگانی دارند.</p>
+                <p>اجزای اصلی شامل باندهای پرواز سنگین، تاکسی‌وی‌ها، اپرون‌های پهلوگیری و ترمینال‌های مسافربری غول‌پیکر است.</p>
+                <p>فرودگاه‌های مهم ایران نظیر امام خمینی و مهرآباد سالانه میلیون‌ها مسافر را در شرایط فصلی مختلف جابه‌جا می‌کنند.</p>
+                <p>فرودگاه‌های بزرگ جهان مانند آتلانتا و دبی با مدیریت هوشمند ترافیک، حجم عظیمی از پروازها را کنترل می‌نمایند.</p>
+                <p>طراحی و توسعه این تأسیسات عظیم نیازمند پیش‌بینی‌های دقیق آماری و مدل‌سازی‌های احتمالی است.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80" alt="فرودگاه‌های بین‌المللی">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای پیوندچی</span><span>صفحه ۱۵ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۶ -->
+    <div class="slide">
+        <div class="slide-header"><h2>پیش‌بینی احتمالاتی رشد مسافران و توسعه ظرفیت ترمینال‌ها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>طراحی ظرفیت ترمینال‌های مسافربری و پارکینگ‌ها بر اساس پیش‌بینی‌های بلندمدت آماری تقاضای سفر انجام می‌شود.</p>
+                <p>با استفاده از تحلیل رگرسیون و نرخ‌های رشد مرکب سالانه، تعداد مسافران در افق‌های ۱۰ و ۲۰ ساله تخمین زده می‌شود.</p>
+                <p>مثال کاربردی: فرودگاهی با ۱۰ میلیون مسافر و نرخ رشد ۵ درصدی، پس از یک دهه به بیش از ۱۶.۳ میلیون مسافر می‌رسد.</p>
+                <p>این محاسبات概率 به مدیران اجازه می‌دهد از ایجاد گلوگاه‌های ترافیکی، صف‌های طویل و نارضایتی مسافران جلوگیری کنند.</p>
+                <p>توسعه فاز به فاز فرودگاه‌ها کاملاً بر اساس مدل‌های آماری پیش‌بینی تقاضا برنامه‌ریزی و اجرا می‌گردد.</p>
+            </div>
+            <div class="image-side">
+                <img src="f1.jpg" alt="پیش‌بینی تقاضای مسافر">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای پیوندچی</span><span>صفحه ۱۶ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۷ -->
+    <div class="slide">
+        <div class="slide-header"><h2>مدیریت آماری ترافیک هوایی، ایمنی باند و تأخیر پروازها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>ظرفیت باندهای پرواز (Runway Capacity) به شدت تحت تاثیر عوامل تصادفی نظیر شرایط جوی و زمان تخلیه هواپیماست.</p>
+                <p>با تحلیل داده‌های تاریخی پروازها، احتمال وقوع تأخیرهای فصلی و میانگین زمان انتظار هواپیماها مدل‌سازی می‌شود.</p>
+                <p>آمار هواشناسی احتمال وقوع مه غلیظ، بارش برف و بادهای جانبی شدید را برای تعیین سیستم‌های کمک ناوبری بررسی می‌کند.</p>
+                <p>مدیریت ریسک در فرودگاه‌ها بر پایه تحلیل احتمال سوانح و خرابی تجهیزات ایمنی و آتش‌نشانی استوار است.</p>
+                <p>این تحلیل‌های آماری تضمین‌کننده بالاترین سطح ایمنی در حساس‌ترین بخش حمل‌ونقل مدرن است.</p>
+            </div>
+            <div class="image-side">
+                <img src="f2.jpg" alt="مدیریت ترافیک هوایی">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای پیوندچی</span><span>صفحه ۱۷ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۸ -->
+    <div class="slide">
+        <div class="slide-header"><h2>جمع‌بندی بخش فرودگاه‌ها و چشم‌انداز آینده لجستیک هوایی</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>صنعت هوانوردی و فرودگاهی یکی از پیچ‌ترین سیستم‌های لجستیکی است که کوچک‌ترین ناکارآمدی در آن هزینه‌بر است.</p>
+                <p>علم آمار و احتمال پل ارتباطی میان داده‌های گذشته پرواز و تصمیم‌گیری‌های کلان توسعه زیرساخت‌هاست.</p>
+                <p>از طراحی روسازی بتنی باند تا ظرفیت‌یابی گیت‌های خروجی، تمامی اجزا بر پایه استانداردهای آماری شکل گرفته‌اند.</p>
+                <p>مدیریت عدم قطعیت در تقاضای مسافر و شرایط جوی، پایداری و سودآوری فرودگاه‌های مدرن را تضمین می‌کند.</p>
+                <p>این بخش اهمیت انکارناپذیر آمار را در آسمان و زمین به نمایش می‌گذارد.</p>
+            </div>
+            <div class="image-side">
+                <img src="f1.jpg" alt="جمع‌بندی فرودگاه">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای پیوندچی</span><span>صفحه ۱۸ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۱۹ -->
+    <div class="slide">
+        <div class="slide-header"><h2>بخش چهارم: مقدمه و اهمیت استراتژیک بنادر در اقتصاد دریایی</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>بنادر تجاری و بازرگانی دروازه‌های اصلی ورود و خروج کالا و شریان حیاتی اقتصاد جهانی به شمار می‌روند.</p>
+                <p>ساخت بنادر نیازمند مطالعات عمیق مهندسی سواحل، هیدرودینامیک دریا و سازه‌های مقاوم در برابر امواج سنگین است.</p>
+                <p>بنادر مهم ایران نظیر شهید رجایی، امام خمینی و چابهار نقش کلیدی در ترانزیت کالا در کریدورهای بین‌المللی دارند.</p>
+                <p>بنادر غول‌پیکر جهان مانند شانگهای، سنگاپور و روتردام حجم عظیمی از زنجیره تامین جهانی را مدیریت می‌کنند.</p>
+                <p>طراحی این سازه‌های عظیم بدون تحلیل آماری شرایط جوی و حجم بار غیرممکن است.</p>
+            </div>
+            <div class="image-side">
+                <img src="b1.jpg" alt="بنادر و تجارت دریایی">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای کیماسی</span><span>صفحه ۱۹ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۰ -->
+    <div class="slide">
+        <div class="slide-header"><h2>پیش‌بینی آماری حجم کالا و مدیریت محوطه‌های کانتینری</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>حجم واردات و صادرات کالا در بنادر بر اساس روندهای اقتصادی کلان و داده‌های آماری گذشته پیش‌بینی می‌شود.</p>
+                <p>تحلیل زمان ماندگاری کانتینرها در انبارها و محوطه‌ها به کمک توزیع‌های آماری زمان انتظار انجام می‌گیرد.</p>
+                <p>این مدل‌سازی‌ها ظرفیت مورد نیاز انبارها، تعداد جرثقیل‌های دروازه‌ای و تجهیزات تخلیه را بهینه می‌سازد.</p>
+                <p>مدیریت لجستیک بندری از ازدحام کشتی‌ها در لنگرگاه‌ها جلوگیری کرده و بهره‌وری عملیاتی را افزایش می‌دهد.</p>
+                <p>پیش‌بینی دقیق بار ورودی، کلید موفقیت اقتصادی بنادر در رقابت‌های بین‌المللی است.</p>
+            </div>
+            <div class="image-side">
+                <img src="b2.jpg" alt="محوطه‌های کانتینری بندر">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای کیماسی</span><span>صفحه ۲۰ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۱ -->
+    <div class="slide">
+        <div class="slide-header"><h2>تحلیل احتمالاتی امواج دریا و طراحی سازه‌های موج‌شکن</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>موج‌شکن‌ها سازه‌های دریایی سنگینی هستند که برای ایجاد آرامش در حوضچه بندر در برابر انرژی مخرب امواج ساخته می‌شوند.</p>
+                <p>ارتفاع امواج طوفانی دریا تصادفی بوده و از توزیع‌های آماری حدی (نظیر وایبل یا گامبل) تبعیت می‌کند.</p>
+                <p>مهندسان با تحلیل آماری داده‌های بادسنجی و موج‌سنجی چندساله، موج طراحی با دوره بازگشت ۱۰۰ ساله را محاسبه می‌کنند.</p>
+                <p>این تحلیل تضمین می‌کند که آرایش سنگ‌ها و بلوک‌های بتنی موج‌شکن در برابر طوفان‌های سهمگین دریایی پایدار بماند.</p>
+                <p>بدون این محاسبات احتمالی، خطر انهدام موج‌شکن و ورود امواج به داخل بندر بسیار بالا خواهد بود.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=600&q=80" alt="طراحی موج‌شکن">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای کیماسی</span><span>صفحه ۲۱ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۲ -->
+    <div class="slide">
+        <div class="slide-header"><h2>جمع‌بندی بخش بنادر و نقش آمار در بهینه‌سازی زنجیره تامین</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>بنادر به عنوان گره‌های اصلی حمل‌ونقل چندوجهی، نیازمند هماهنگی دقیق میان سازه‌های دریایی و لجستیک خشکی هستند.</p>
+                <p>آمار و احتمال با پیش‌بینی دقیق بار، تحلیل امواج و مدیریت ترافیک کشتی‌ها کارایی بنادر را متحول کرده است.</p>
+                <p>تعمیرات پیشگیرانه تجهیزات سنگین بندری بر اساس داده‌های آماری خرابی برنامه‌ریزی می‌شود.</p>
+                <p>این رویکرد علمی هزینه‌های توقف کشتی‌ها (Demurrage) را به حداقل می‌رساند.</p>
+                <p>توسعه پایدار اقتصاد دریابرد مستند به تحلیل‌های دقیق احتمالی است.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80" alt="جمع‌بندی بنادر">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای کیماسی</span><span>صفحه ۲۲ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۳ -->
+    <div class="slide">
+        <div class="slide-header"><h2>بخش پنجم: مقدمه و اهمیت استراتژیک سدهای مخزنی در عمران</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>سدها بزرگترین سازه‌های دست‌ساز بشر هستند که با هدف کنترل سیلاب، تامین آب شرب، کشاورزی و تولید انرژی برق‌آبی احداث می‌شوند.</p>
+                <p>اجزای اصلی شامل بدنه بتنی یا خاکی، مخزن ذخیره، سرریزهای تخلیه سیلاب، فونداسیون و نیروگاه‌های زیرزمینی است.</p>
+                <p>سدهای مهم ایران نظیر کرخه، کارون ۳، دز و سفیدرود شریان‌های حیات‌بخش توسعه ملی کشور هستند.</p>
+                <p>سدهای بزرگ جهان مانند سه‌دره چین و هوور آمریکا مقیاس عظیمی از مهار آب‌های سطحی را نشان می‌دهند.</p>
+                <p>طراحی این سازه‌های پرمخاطره کاملاً بر پایه علم آمار و احتمال استوار است.</p>
+            </div>
+            <div class="image-side">
+                <img src="s1.jpg" alt="سدهای بزرگ مخزنی">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای آذربایجانی</span><span>صفحه ۲۳ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۴ -->
+    <div class="slide">
+        <div class="slide-header"><h2>تحلیل هیدرولوژیکی بارندگی و تخمین سیلاب‌های حدی سدها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>رژیم بارندگی و جریان رودخانه‌ها در حوضه‌های آبریز دارای نوسانات شدید تصادفی و فصلی است.</p>
+                <p>مهندسان با استفاده از آمار دبی روزانه و ماهانه ده‌ها سال گذشته، احتمال وقوع سیلاب‌های حداکثر محتمل (PMF) را محاسبه می‌کنند.</p>
+                <p>تعیین دوره بازگشت سیلاب‌های طراحی سرریز (مثلا سیلاب ۱۰۰۰ ساله) بر اساس توزیع‌های آماری پیرسون نوع ۳ انجام می‌شود.</p>
+                <p>این محاسبات دقیق از سرریز شدن ناخواسته آب از تاج سد و وقوع فجایع شکست سد جلوگیری می‌کند.</p>
+                <p>آمار هیدرولوژی به عنوان سپر ایمنی مخازن آبی عمل می‌نماید.</p>
+            </div>
+            <div class="image-side">
+                <img src="s2.jpg" alt="تحلیل هیدرولوژی سد">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای آذربایجانی</span><span>صفحه ۲۴ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۵ -->
+    <div class="slide">
+        <div class="slide-header"><h2>مدیریت ریسک، پایداری بدنه و تحلیل پی سدها</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>فشار هیدرواستاتیکی عظیم آب پشت سد، نیروهای برشی سنگینی به پی و بدنه سازه وارد می‌کند.</p>
+                <p>آزمایش‌های مکانیک سنگ و خاک پی دارای پراکندگی آماری بوده که با روش‌های احتمالاتی تحلیل می‌شوند.</p>
+                <p>ارزیابی ریسک لغزش و ناپایداری تکیه‌گاه‌های سد با در نظر گرفتن ضرایب اطمینان آماری صورت می‌گیرد.</p>
+                <p>ابزار دقیق نصب‌شده در بدنه سد (پیزومترها و درین‌ها) داده‌های نشت و تغییر شکل را به صورت لحظه‌ای پایش می‌کنند.</p>
+                <p>تحلیل آماری این داده‌ها هشدارهای اولیه را پیش از بروز بحران سازه‌ای صادر می‌کند.</p>
+            </div>
+            <div class="image-side">
+                <img src="s3.jpg" alt="پایداری پی و بدنه سد">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای آذربایجانی</span><span>صفحه ۲۵ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۶ -->
+    <div class="slide">
+        <div class="slide-header"><h2>بهینه‌سازی منابع آب و پیش‌بینی تولید انرژی برق‌آبی</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>بهره‌برداری از سدهای مخزنی نیازمند برنامه‌ریزی دقیق توزیع آب برای مصارف شرب، کشاورزی و صنعت است.</p>
+                <p>با استفاده از مدل‌های احتمالی ورودی آب به مخزن در دوره‌های خشک‌سالی و ترسالی، منحنی‌های فرمان مخزن تنظیم می‌شوند.</p>
+                <p>تحلیل آمار نوسانات سطح آب مخزن، میزان تولید انرژی توربین‌های برق‌آبی را به صورت فصلی پیش‌بینی می‌کند.</p>
+                <p>این مدیریت مبتنی بر آمار، از بحران‌های کم‌آبی جلوگیری کرده و حداکثر راندمان اقتصادی را به ارمغان می‌آورد.</p>
+                <p>تلفیق سدسازی با علم احتمال، پایداری منابع حیاتی کشور را تضمین می‌کند.</p>
+            </div>
+            <div class="image-side">
+                <img src="s4.jpg" alt="نیروگاه برق‌آبی سد">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای آذربایجانی</span><span>صفحه ۲۶ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلاید ۲۷ -->
+    <div class="slide">
+        <div class="slide-header"><h2>جمع‌بندی بخش سدها و تجلی عملی آمار در مهندسی منابع آب</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>محاسبه دوره بازگشت سیلاب‌ها و طراحی سرریزها برجست‌ترین نمونه کاربرد عملی احتمال در مهندسی عمران است.</p>
+                <p>سدها سازه‌هایی پرمخاطره‌اند که ایمنی آن‌ها مستقیماً با دقت تحلیل‌های آماری ارتباط دارد.</p>
+                <p>مدیریت عدم قطعیت ورودی‌های هیدرولوژیکی، خسارات جانی و مالی سیلاب‌ها را به شدت کاهش می‌دهد.</p>
+                <p>توسعه پایدار سدهای مخزنی در گروی تداوم پژوهش‌های آماری و پایش هوشمند سازه‌ای است.</p>
+                <p>این بخش اهمیت حیاتی آمار را در مهار خشم طبیعت به تصویر کشید.</p>
+            </div>
+            <div class="image-side">
+                <img src="p5.jpg" alt="جمع‌بندی سدها">
+            </div>
+        </div>
+        <div class="slide-footer"><span>ارائه‌دهنده: آقای آذربایجانی</span><span>صفحه ۲۷ از ۳۸</span></div>
+    </div>
+
+    <!-- اسلایدهای تکمیلی تخصصی (۲۸ تا ۳۷) -->
+    <div class="slide"><div class="slide-header"><h2>تحلیل‌های رگرسیونی پیشرفته در تخمین هزینه‌های عمرانی</h2></div><div class="slide-content"><div class="text-side"><p>استفاده از مدل‌های رگرسیون چندگانه برای پیش‌بینی هزینه‌های ساخت و نگهداری زیرساخت‌ها.</p><p>مدل‌سازی تصادفی برای ارزیابی چرخه عمر اقتصادی پروژه‌های بزرگ مقیاس مهندسی.</p><p>تحلیل حساسیت پارامترهای متغیر در بودجه‌بندی طرح‌های ملی عمرانی کشور.</p><p>کنترل انحراف از معیار هزینه‌های واقعی نسبت به برآوردهای اولیه مهندسی.</p><p>بهینه‌سازی تخصیص منابع مالی با استفاده از شاخص‌های آماری ریسک.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71" alt="رگرسیون"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۲۸ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>کاربرد توزیع‌های احتمالاتی در کنترل کیفیت سازه‌های بتنی</h2></div><div class="slide-content"><div class="text-side"><p>به کارگیری توزیع نرمال (گاوسی) در تحلیل مقاومت نمونه‌های آزمایشگاهی بتن.</p><p>بررسی توزیع پواسون در مدل‌سازی زمان‌بندی وقوع خرابی‌ها و ترافیک معابر.</p><p>تعیین حدود تلرانس‌های مجاز اجرایی بر اساس انحراف معیارهای کارگاهی.</p><p>تضمین انطباق کیفیت بتن با استانداردهای ملی و بین‌المللی سازه‌ای.</p><p>کاهش احتمال رد شدن قطعات پیش‌ساخته با پایش آماری مستمر.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40" alt="توزیع احتمال"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۲۹ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>شبیه‌سازی مونت‌کارلو و ارزیابی ریسک لرزه‌ای سازه‌ها</h2></div><div class="slide-content"><div class="text-side"><p>استفاده از تکنیک شبیه‌سازی مونت‌کارلو برای تحلیل رفتار غیرخطی سازه‌ها در زلزله.</p><p>تولید هزاران تاریخچه زمانی شبیه‌سازی‌شده برای بارگذاری دینامیکی.</p><p>تعیین احتمال فروپاشی سازه تحت زلزله‌های شدید با طیف‌های خطر.</p><p>ارتقای آیین‌نامه‌های طراحی لرزه‌ای بر مبنای قابلیت اطمینان آماری.</p><p>حفاظت از جان انسان‌ها در مناطق با لرزه‌خیز بالا.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf" alt="مونت‌کارلو"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۰ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>نقش داده‌کاوی و اینترنت اشیاء (IoT) در پایش سلامت سازه‌ها</h2></div><div class="slide-content"><div class="text-side"><p>پایش لحظه‌ای پل‌ها، تونل‌ها و سدها با سنسورهای هوشمند تار نوری.</p><p>تحلیل کلان‌داده‌ها (Big Data) برای شناسایی الگوهای نامحسوس آسیب سازه‌ای.</p><p>پیش‌بینی زمان دقیق نیاز به تعمیرات پیشگیرانه پیش از بروز خرابی مشهود.</p><p>کهنگی‌زدایی از روش‌های سنتی بازرسی دوره‌ای با اتکا به هوش مصنوعی.</p><p>افزایش چشمگیر طول عمر مفید زیرساخت‌های حیاتی کشور.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1518770660439-4636190af475" alt="پایش هوشمند"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۱ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>اقتصاد مهندسی و تحلیل ریسک مالی در پروژه‌های عمرانی</h2></div><div class="slide-content"><div class="text-side"><p>ارزیابی ارزش زمانی پول تحت تاثیر نوسانات تصادفی تورم و نرخ بهره.</p><p>تحلیل هزینه‌های چرخه عمر (LCC) با لحاظ کردن احتمالات خرابی.</p><p>مدیریت ادعاها و تأخیرات پیمانکاری با استفاده از مدل‌های آماری تاخیر.</p><p>بهینه‌سازی جریان نقدینگی پروژه‌های بزرگ زیرساختی کشور.</p><p>جلوگیری از توقف پروژه‌ها به دلیل کمبود منابع مالی پیش‌بینی‌نشده.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c" alt="اقتصاد مهندسی"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۲ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>مدیریت بحران و پدافند غیرعامل در حوادث غیرمترقبه</h2></div><div class="slide-content"><div class="text-side"><p>مدل‌سازی احتمالاتی سناریوهای بحران نظیر انفجار، تروریسم یا زمین‌لغزش.</p><p>طراحی شبکه‌های شریانی حیاتی جایگزین بر اساس تحلیل ترافیک تخلیه.</p><p>ارزیابی آسیب‌پذیری لرزه‌ای شبکه آب‌رسانی و گاز شهری.</p><p>کاهش تلفات انسانی با برنامه‌ریزی واکنش اضطراری مبتنی بر داده.</p><p>ارتقای تاب‌آوری شهرها در برابر حوادث پیچیده طبیعی و انسانی.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1541888946425-d0fbb18f86f6" alt="پدافند غیرعامل"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۳ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>تأثیر تغییر اقلیم جهانی بر طراحی‌های هیدرولیکی سازه‌ها</h2></div><div class="slide-content"><div class="text-side"><p>افزایش خطاهای داده‌های آماری تاریخی به دلیل تغییرات اقلیمی شدید اخیر.</p><p>لزوم بازنگری اساسی در دوره‌های بازگشت سیلاب پل‌ها و سدهای موجود.</p><p>مدل‌سازی احتمالاتی رویدادهای حدی جوی نظیر طوفان‌های حاره‌ای و خشکسالی.</p><p>توسعه آیین‌نامه‌های تطبیقی جدید برای مقاومت در برابر گرمایش زمین.</p><p>صیانت از سرمایه‌گذاری‌های زیرساختی در برابر شرایط جوی ناپایدار آینده.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1547683905-f686c993aae5" alt="تغییر اقلیم"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۴ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>آیین‌نامه‌های بین‌المللی مدرن بر مبنای حالت‌های حدی و قابلیت اطمینان</h2></div><div class="slide-content"><div class="text-side"><p>گذر ساختاری آیین‌نامه‌ها از روش تنش مجاز سنتی به روش حالت‌های حدی نهایی.</p><p>اعمال ضرایب بار و مقاومت آماری (LRFD) در طراحی سازه‌های بتنی و فولادی.</p><p>تامین ایمنی یکنواخت در تمامی اعضای سازه‌ای با تکیه بر نظریه احتمال.</p><p>هماهنگی مهندسی عمران ایران با استانداردهای معتبر جهانی نظیر ACI و ASCE.</p><p>تضمین بالاترین استانداردهای کیفی در اجرای طرح‌های عمرانی.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1584467735811-628a87321c25" alt="آیین‌نامه‌های بین‌المللی"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۵ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>نقش فناوری‌های نوین (GIS و BIM) در تحلیل‌های مکانی و آماری</h2></div><div class="slide-content"><div class="text-side"><p>تلفیق داده‌های آماری کلان با مدل‌های اطلاعات ساختمان (BIM) و سامانه GIS.</p><p>دقت بی‌نظیر در مکان‌یابی بهینه پروژه‌های خطی و نقطه‌ای عمرانی.</p><p>مدیریت یکپارچه اطلاعات پروژه از فاز مطالعات تا بهره‌برداری و نگهداری.</p><p>کاهش خطاهای انسانی در مستندسازی و تحلیل‌های مهندسی.</p><p>تحقق تحول دیجیتال در صنعت ساخت‌وساز کشور.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1508873696983-2df5c92091c7" alt="فناوری BIM و GIS"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۶ از ۳۸</span></div></div>
+
+    <div class="slide"><div class="slide-header"><h2>چالش‌های ساختاری در پیاده‌سازی تحلیل‌های آماری در پروژه‌های کشور</h2></div><div class="slide-content"><div class="text-side"><p>کمبود پایگاه‌های داده متمرکز و ثبت دقیق سوابق عملکردی زیرساخت‌ها.</p><p>لزوم به‌روزرسانی ایستگاه‌های سنجش هیدرولوژیکی، ترافیکی و هواشناسی.</p><p>نیاز به توسعه دانش تخصصی تحلیل ریسک میان جامعه مهندسین مشاور.</p><p>چالش‌های فرهنگی در پذیرش تغییر رویکدهای سنتی به مدرن احتمالاتی.</p><p>لزوم حمایت نهادهای بالادستی از پژوهش‌های کاربردی در مهندسی عمران.</p></div><div class="image-side"><img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd" alt="چالش‌های اجرایی"></div></div><div class="slide-footer"><span>تیم ارائه‌دهندگان</span><span>صفحه ۳۷ از ۳۸</span></div></div>
+
+    <!-- اسلاید ۳۸: نتیجه‌گیری نهایی -->
+    <div class="slide">
+        <div class="slide-header"><h2>نتیجه‌گیری کلان و قدردانی از حضور استاد و همکاران</h2></div>
+        <div class="slide-content">
+            <div class="text-side">
+                <p>مهندسی عمران مدرن بدون تکیه بر علم آمار و احتمال، فاقد پشتوانه علمی لازم برای مواجهه با ناشناخته‌هاست.</p>
+                <p>مدیریت ریسک، ارتقای ضریب قابلیت اطمینان و بهینه‌سازی اقتصادی از دستاوردهای بنیادین این تلفیق است.</p>
+                <p>پنج حوزه بررسی‌شده (راه، پل و تونل، فرودگاه، بندر و سد) همگی گواه ضرورت انکارناپذیر تحلیل احتمالی هستند.</p>
+                <p>از راهنمایی‌های ارزشمند استاد گرانقدر جناب آقای دکتر آزادی صمیمانه سپاسگزاریم.</p>
+                <p>از حضور همکاران گرامی و توجه شما عزیزان در این ارائه کمال تشکر را داریم.</p>
+            </div>
+            <div class="image-side">
+                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80" alt="پایان ارائه">
+            </div>
+        </div>
+        <div class="slide-footer"><span>گروه ارائه‌دهندگان</span><span>صفحه ۳۸ از ۳۸</span></div>
+    </div>
+
+    <!-- کلیدهای کنترل -->
+    <div class="controls">
+        <button class="nav-btn" onclick="prevSlide()">اسلاید قبلی</button>
+        <button class="nav-btn" onclick="nextSlide()">اسلاید بعدی</button>
+    </div>
+
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        if (index >= slides.length) currentSlide = 0;
+        else if (index < 0) currentSlide = slides.length - 1;
+        else currentSlide = index;
+        slides[currentSlide].classList.add('active');
+    }
+
+    function nextSlide() {
+        showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+        showSlide(currentSlide - 1);
+    }
+
+    // کنترل با کلیدهای جهتی کیبورد
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            prevSlide(); // در جهت راست به چپ فارسی، کلید راست اسلاید قبلی است
+        } else if (e.key === 'ArrowLeft') {
+            nextSlide();
+        }
+    });
+</script>
+
+</body>
+</html>
